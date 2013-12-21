@@ -45,6 +45,8 @@ prove Empty           (Var n ::: t) = False
 prove (g :@: (n',t')) (Var n ::: t) = if n' == n
                                       then t' == t
                                       else prove g (Var n ::: t)
+prove g (Unit ::: One) = True
+prove g (Abort m ::: c) = prove g (m ::: Zero)
 prove g (Pair m n ::: a :*: b) = prove g (m ::: a) && prove g (n ::: b)
 prove g (Fst p ::: a)          = prove g (p ::: a :*: undefined)
 prove g (Snd p ::: b)          = prove g (p ::: undefined :*: b)
@@ -53,3 +55,6 @@ prove g (Inr n ::: a :+: b) = prove g (n ::: b)
 prove g (Case d x m y n ::: c) = prove g (d ::: undefined :+: undefined)
                               && prove (g :@: (x,undefined)) (m ::: undefined)
                               && prove (g :@: (y,undefined)) (n ::: undefined)
+prove g (Lam x m ::: a :->: b) = prove (g :@: (x, a)) (m ::: b)
+prove g (App f m ::: b)        = prove g (f ::: undefined :->: b)
+                              && prove g (m ::: undefined)
